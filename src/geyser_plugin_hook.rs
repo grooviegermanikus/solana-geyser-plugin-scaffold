@@ -93,7 +93,7 @@ impl GeyserPlugin for GeyserPluginHook {
                 info!("[notify_transaction], transaction:{:#?}, slot:{:#?}", transaction_info.is_vote, slot);
             }
             ReplicaTransactionInfoVersions::V0_0_2(transaction_info) => {
-                info!("[notify_transaction], transaction:{:#?}, slot:{:#?}, status:{:#?}", transaction_info.is_vote, slot, transaction_info.transaction_status_meta.status);
+                info!("[notify_transaction], transaction:{:#?}, slot:{:#?}", transaction_info.is_vote, slot);
             }
         }
         Ok(())
