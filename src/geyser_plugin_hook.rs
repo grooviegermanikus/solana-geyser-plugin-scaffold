@@ -88,11 +88,14 @@ impl GeyserPlugin for GeyserPluginHook {
     /// Event: a transaction is updated at a slot.
     #[allow(unused_variables)]
     fn notify_transaction(&self, transaction: ReplicaTransactionInfoVersions, slot: u64) -> solana_geyser_plugin_interface::geyser_plugin_interface::Result<()> {
-        // match transaction {
-        //     ReplicaTransactionInfoVersions::V0_0_1(transaction_info) => {
-        //         // info!("[notify_transaction], transaction:{:#?}, slot:{:#?}", transaction_info.is_vote, slot);
-        //     }
-        // }
+        match transaction {
+            ReplicaTransactionInfoVersions::V0_0_1(transaction_info) => {
+                info!("[notify_transaction], transaction:{:#?}, slot:{:#?}", transaction_info.is_vote, slot);
+            }
+            ReplicaTransactionInfoVersions::V0_0_2(transaction_info) => {
+                info!("[notify_transaction], transaction:{:#?}, slot:{:#?}, status:{:#?}", transaction_info.is_vote, slot, transaction_info.transaction_status_meta.status);
+            }
+        }
         Ok(())
     }
 
