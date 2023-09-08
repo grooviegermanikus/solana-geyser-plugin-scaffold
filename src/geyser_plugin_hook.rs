@@ -1,3 +1,5 @@
+use std::thread::sleep;
+use std::time::{Duration, Instant};
 use {
     std::fmt::{
         Debug, Formatter
@@ -9,6 +11,7 @@ use {
         SlotStatus
     }
 };
+use crate::debug_util::print_stacktrace;
 
 
 /// This is the main object returned bu our dynamic library in entrypoint.rs
@@ -58,7 +61,7 @@ impl GeyserPlugin for GeyserPluginHook {
                     bs58::encode(account.pubkey).into_string(),
                     bs58::encode(account.owner).into_string(),
                 );
-                info!("[update_account] - account: {:#?}, slot:{:#?}, is_startup:{:#?}", acc, slot, is_startup);
+                // info!("[update_account] - account: {:#?}, slot:{:#?}, is_startup:{:#?}", acc, slot, is_startup);
             }
             ReplicaAccountInfoVersions::V0_0_3(account) => {
                 let acc = format!(
@@ -66,7 +69,7 @@ impl GeyserPlugin for GeyserPluginHook {
                     bs58::encode(account.pubkey).into_string(),
                     bs58::encode(account.owner).into_string(),
                 );
-                info!("[update_account] - account: {:#?}, slot:{:#?}, is_startup:{:#?}, write_version:{:#?}", acc, slot, is_startup, account.write_version);
+                // info!("[update_account] - account: {:#?}, slot:{:#?}, is_startup:{:#?}, write_version:{:#?}", acc, slot, is_startup, account.write_version);
             }
         }
         Ok(())
@@ -81,19 +84,35 @@ impl GeyserPlugin for GeyserPluginHook {
 
     /// Event: a slot status is updated.
     fn update_slot_status(&self, slot: u64, parent: Option<u64>, status: SlotStatus) -> solana_geyser_plugin_interface::geyser_plugin_interface::Result<()> {
-        info!("[update_slot_status], slot:{:#?}, parent:{:#?}, status:{:#?}", slot, parent, status);
+        // info!("[update_slot_status], slot:{:#?}, parent:{:#?}, status:{:#?}", slot, parent, status);
         Ok(())
     }
 
     /// Event: a transaction is updated at a slot.
     #[allow(unused_variables)]
     fn notify_transaction(&self, transaction: ReplicaTransactionInfoVersions, slot: u64) -> solana_geyser_plugin_interface::geyser_plugin_interface::Result<()> {
+
+        // print_stacktrace();
+
+        if false {
+            warn!("SLEEPING SYNC FOR A WHILE ...");
+            for i in 1..5 {
+                sleep(Duration::from_millis(10));
+                warn!("..");
+            }
+        }
+
         match transaction {
             ReplicaTransactionInfoVersions::V0_0_1(transaction_info) => {
-                info!("[notify_transaction], transaction:{:#?}, slot:{:#?}", transaction_info.is_vote, slot);
+                if !transaction_info.is_vote {
+                    info!("[notify_transaction], transaction:{:#?}, slot:{:#?}", transaction_info.signature, slot);
+                }
             }
             ReplicaTransactionInfoVersions::V0_0_2(transaction_info) => {
-                info!("[notify_transaction], transaction:{:#?}, slot:{:#?}", transaction_info.is_vote, slot);
+                if !transaction_info.is_vote {
+                    let now = Instant::now();
+                    info!("[notify_transaction], transaction:{:#?}, slot:{:#?}, at:{:?}", transaction_info.signature, slot, now);
+                }
             }
         }
         Ok(())
@@ -102,22 +121,22 @@ impl GeyserPlugin for GeyserPluginHook {
     fn notify_block_metadata(&self, blockinfo: ReplicaBlockInfoVersions) -> solana_geyser_plugin_interface::geyser_plugin_interface::Result<()> {
         match blockinfo {
             ReplicaBlockInfoVersions::V0_0_1(blockinfo) => {
-                info!("[notify_block_metadata], block_info:{:#?}", blockinfo);
+                // info!("[notify_block_metadata], block_info:{:#?}", blockinfo);
             }
             ReplicaBlockInfoVersions::V0_0_2(blockinfo) => {
-                info!("[notify_block_metadata], block_info:{:#?}", blockinfo);
+                // info!("[notify_block_metadata], block_info:{:#?}", blockinfo);
             }
         }
         Ok(())
     }
 
     fn account_data_notifications_enabled(&self) -> bool {
-        info!("[account_data_notifications_enabled] - plugin interface is asking if data notifs should be enabled?");
+        // info!("[account_data_notifications_enabled] - plugin interface is asking if data notifs should be enabled?");
         true
     }
 
     fn transaction_notifications_enabled(&self) -> bool {
-        info!("[transaction_notifications_enabled] - plugin interface is asking if transactions notifs should be enabled?");
+        // info!("[transaction_notifications_enabled] - plugin interface is asking if transactions notifs should be enabled?");
         true
     }
 }
