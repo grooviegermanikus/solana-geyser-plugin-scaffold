@@ -1,12 +1,7 @@
 use {
-    crate::{
-        geyser_plugin_hook::GeyserPluginHook
-    },
-    solana_geyser_plugin_interface::geyser_plugin_interface::{
-        GeyserPlugin
-    }
+    crate::geyser_plugin_hook::GeyserPluginHook,
+    solana_geyser_plugin_interface::geyser_plugin_interface::GeyserPlugin,
 };
-
 
 #[no_mangle]
 #[allow(improper_ctypes_definitions)]
